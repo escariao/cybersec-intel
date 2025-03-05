@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberSec Intel - Monitoramento de IPs</title>
+    <style>
+        body { text-align: center; font-family: Arial, sans-serif; }
+        input { padding: 10px; width: 250px; }
+        button { padding: 10px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>CyberSec Intel - Verifique um IP</h1>
+    <form method="POST">
+        <input type="text" name="ip" placeholder="Digite um IP para análise" required>
+        <button type="submit">Verificar</button>
+    </form>
+
+    {% if data %}
+        <h2>Resultados:</h2>
+        <p><strong>IP:</strong> {{ data['data']['ipAddress'] }}</p>
+        <p><strong>Abuso Reportado:</strong> {{ data['data']['abuseConfidenceScore'] }}%</p>
+        <p><strong>Última Atividade:</strong> {{ data['data']['lastReportedAt'] }}</p>
+    {% endif %}
+</body>
+</html>
