@@ -8,16 +8,21 @@
         body { text-align: center; font-family: Arial, sans-serif; }
         input { padding: 10px; width: 250px; }
         button { padding: 10px; cursor: pointer; }
+        .error { color: red; font-weight: bold; }
     </style>
 </head>
 <body>
-    <h1>CyberSec Intel - Verifique um IP</h1>
+    <h1>CyberSec Intel - Verifique um IP ou Domínio</h1>
     <form method="POST">
-        <input type="text" name="ip" placeholder="Digite um IP para análise" required>
+        <input type="text" name="ip" placeholder="Digite um IP ou Domínio" required>
         <button type="submit">Verificar</button>
     </form>
 
-    {% if data %}
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
+
+    {% if data and not error %}
         <h2>Resultados:</h2>
         <p><strong>IP:</strong> {{ data['data']['ipAddress'] }}</p>
         <p><strong>Abuso Reportado:</strong> {{ data['data']['abuseConfidenceScore'] }}%</p>
