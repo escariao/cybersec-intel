@@ -43,19 +43,24 @@ def home():
     data = None
     error = None
 
-    if request.method == "POST":
-        user_input = request.form["ip"].strip()
-        
-        # Verifica se é um domínio e converte para IP
-        ip = resolve_domain(user_input) if not user_input.replace(".", "").isdigit() else user_input
-        
-        if ip:
-            data = check_ip(ip)
-            if "error" in data:
-                error = data["error"]
-        else:
-            error = "Domínio inválido ou IP incorreto. Verifique e tente novamente."
-    
+    try:
+        if request.method == "POST":
+            user_input = request.form["ip"].strip()
+
+            # Verifica se é um domínio e converte para IP
+            ip = resolve_domain(user_input) if not user_input.replace(".", "").isdigit() else user_input
+            
+            if ip:
+                data = check_ip(ip)
+                if "error" in data:
+                    error = data["error"]
+            else:
+                error = "Domínio inválido ou IP incorreto. Verifique e tente novamente."
+
+    except Exception as e:
+        error = f"Ocorreu um erro: {str(e)}"
+        print(f"Erro ao processar requisição: {e}")  # Log do erro
+
     return render_template("index.html", data=data, error=error)
 
 @app.route("/api/check_ip/<ip>")
