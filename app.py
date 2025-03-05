@@ -4,7 +4,7 @@ from flask import Flask, render_template, request, jsonify
 app = Flask(__name__)
 
 # ⚠️ Substitua pela sua chave da AbuseIPDB
-ABUSEIPDB_API_KEY = "SUA_CHAVE_AQUI"
+ABUSEIPDB_API_KEY = "7652758a92b582f623257d1258cd4512b26ddf7ca4b5d2177bcd9d30578f29fa33fc0737ee25b8a9"
 
 def check_ip(ip):
     """ Consulta IPs na AbuseIPDB """
