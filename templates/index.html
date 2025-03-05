@@ -4,18 +4,76 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CyberSec Intel - Monitoramento de IPs</title>
+    
     <!-- Importando Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Estilos personalizados -->
     <style>
-        body { padding-top: 50px; }
-        .error { color: red; font-weight: bold; }
+        body {
+            background-color: #121212; /* Fundo escuro */
+            color: #e0e0e0;
+            font-family: 'Arial', sans-serif;
+            padding-top: 70px;
+        }
+        .container {
+            max-width: 800px;
+        }
+        .header {
+            text-align: center;
+            padding: 20px 0;
+        }
+        .header h1 {
+            font-size: 28px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+        .card {
+            background: #1e1e1e;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+        }
+        .form-control {
+            background: #2a2a2a;
+            color: #ffffff;
+            border: none;
+        }
+        .btn-primary {
+            background-color: #ff5733;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #e04e2e;
+        }
+        .table {
+            background: #1e1e1e;
+            color: #ffffff;
+        }
+        .alert {
+            border-radius: 5px;
+        }
+        .footer {
+            text-align: center;
+            padding: 15px;
+            margin-top: 20px;
+            color: #a0a0a0;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1 class="text-center">CyberSec Intel - Monitoramento de IPs</h1>
 
-        <div class="card shadow mt-4 p-4">
+    <!-- Cabeçalho -->
+    <div class="container text-center">
+        <div class="header">
+            <h1>CyberSec Intel - Monitoramento de IPs</h1>
+        </div>
+    </div>
+
+    <!-- Formulário de consulta -->
+    <div class="container">
+        <div class="card shadow mt-4">
             <form method="POST">
                 <div class="mb-3">
                     <label for="ip" class="form-label">Digite um IP ou Domínio:</label>
@@ -25,12 +83,14 @@
             </form>
         </div>
 
+        <!-- Exibir mensagem de erro -->
         {% if error %}
         <div class="alert alert-danger mt-3 text-center">{{ error }}</div>
         {% endif %}
 
+        <!-- Exibir resultados da análise -->
         {% if data and not error %}
-        <div class="card shadow mt-4 p-4">
+        <div class="card shadow mt-4">
             <h2 class="text-center">Resultados da Análise</h2>
             <table class="table table-striped">
                 <tr><th>IP</th><td>{{ data['data']['ipAddress'] }}</td></tr>
@@ -39,9 +99,33 @@
             </table>
         </div>
         {% endif %}
+
+        <!-- Histórico de consultas -->
+        {% if consultas %}
+        <div class="card shadow mt-4">
+            <h2 class="text-center">Histórico de Consultas Recentes</h2>
+            <table class="table table-striped">
+                <tr>
+                    <th>IP/Domínio</th>
+                    <th>Data</th>
+                </tr>
+                {% for consulta in consultas %}
+                <tr>
+                    <td>{{ consulta.ip }}</td>
+                    <td>{{ consulta.data_hora.strftime('%d/%m/%Y %H:%M') }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        {% endif %}
     </div>
 
-    <!-- Bootstrap JS para funcionalidades interativas -->
+    <!-- Rodapé -->
+    <div class="footer">
+        &copy; 2025 CyberSec Intel - Desenvolvido por Andrey Escariao
+    </div>
+
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
