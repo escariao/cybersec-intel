@@ -1,10 +1,24 @@
 import requests
 import socket
 from flask import Flask, render_template, request, jsonify
+from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 app = Flask(__name__)
 
-# ⚠️ Substitua pela sua chave da AbuseIPDB
+# Configuração do banco de dados SQLite
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///consultas.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+
+# Modelo para armazenar consultas
+class Consulta(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    ip = db.Column(db.String(100), nullable=False)
+    resultado = db.Column(db.Text, nullable=False)
+    data_hora = db.Column(db.DateTime, default=datetime.utcnow)
+
+# ⚠️ Substitua pela sua chave real da AbuseIPDB
 ABUSEIPDB_API_KEY = "7652758a92b582f623257d1258cd4512b26ddf7ca4b5d2177bcd9d30578f29fa33fc0737ee25b8a9"
 
 def resolve_domain(domain):
@@ -43,25 +57,29 @@ def home():
     data = None
     error = None
 
-    try:
-        if request.method == "POST":
-            user_input = request.form["ip"].strip()
+    if request.method == "POST":
+        user_input = request.form["ip"].strip()
 
-            # Verifica se é um domínio e converte para IP
-            ip = resolve_domain(user_input) if not user_input.replace(".", "").isdigit() else user_input
-            
-            if ip:
-                data = check_ip(ip)
-                if "error" in data:
-                    error = data["error"]
+        # Verifica se é um domínio e converte para IP
+        ip = resolve_domain(user_input) if not user_input.replace(".", "").isdigit() else user_input
+        
+        if ip:
+            data = check_ip(ip)
+            if "error" in data:
+                error = data["error"]
             else:
-                error = "Domínio inválido ou IP incorreto. Verifique e tente novamente."
+                # Armazena a consulta no banco de dados
+                resultado = str(data)
+                nova_consulta = Consulta(ip=ip, resultado=resultado)
+                db.session.add(nova_consulta)
+                db.session.commit()
+        else:
+            error = "Domínio inválido ou IP incorreto. Verifique e tente novamente."
 
-    except Exception as e:
-        error = f"Ocorreu um erro: {str(e)}"
-        print(f"Erro ao processar requisição: {e}")  # Log do erro
-
-    return render_template("index.html", data=data, error=error)
+    # Recupera as últimas 10 consultas
+    consultas = Consulta.query.order_by(Consulta.data_hora.desc()).limit(10).all()
+    
+    return render_template("index.html", data=data, error=error, consultas=consultas)
 
 @app.route("/api/check_ip/<ip>")
 def api_check_ip(ip):
@@ -73,4 +91,6 @@ def api_check_ip(ip):
     return jsonify(check_ip(resolved_ip))
 
 if __name__ == "__main__":
+    with app.app_context():
+        db.create_all()  # Cria as tabelas no banco de dados
     app.run(debug=True)
