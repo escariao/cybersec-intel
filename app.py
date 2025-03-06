@@ -13,11 +13,12 @@ CONSULTAS_FILE = "consultas.json"
 ABUSEIPDB_API_KEY = "7652758a92b582f623257d1258cd4512b26ddf7ca4b5d2177bcd9d30578f29fa33fc0737ee25b8a9"
 
 def resolve_domain(domain):
-    """Tenta converter um domínio em IP. Retorna None se falhar."""
+    """Tenta converter um domínio em IP. Retorna uma mensagem clara se falhar."""
     try:
-        return socket.gethostbyname(domain)
+        ip = socket.gethostbyname(domain)
+        return ip
     except socket.gaierror:
-        return None
+        return None  # Agora o erro será tratado no `home()`
 
 def check_ip(ip):
     """Consulta IPs na AbuseIPDB e trata erros."""
@@ -77,7 +78,8 @@ def home():
         if not user_input.replace(".", "").isdigit():
             ip = resolve_domain(user_input)
             if not ip:
-                error = f"O domínio '{user_input}' não pode ser convertido para um IP válido."
+                error = f"O domínio '{user_input}' não pode ser resolvido para um IP válido. Isso pode indicar que ele não está registrado ou não possui um IP público disponível."
+
         else:
             ip = user_input
 
