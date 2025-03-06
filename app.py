@@ -1,7 +1,7 @@
 import requests
 import socket
 import json
-import os
+import datetime
 from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
@@ -10,7 +10,7 @@ app = Flask(__name__)
 CONSULTAS_FILE = "consultas.json"
 
 # ⚠️ Substitua pela sua chave real da AbuseIPDB
-ABUSEIPDB_API_KEY = "7652758a92b582f623257d1258cd4512b26ddf7ca4b5d2177bcd9d30578f29fa33fc0737ee25b8a9"
+ABUSEIPDB_API_KEY = "SUA_CHAVE_AQUI"
 
 def resolve_domain(domain):
     """Tenta converter um domínio em IP. Retorna None se falhar."""
@@ -44,19 +44,20 @@ def check_ip(ip):
         return {"error": f"Erro ao consultar AbuseIPDB: {str(e)}"}
 
 def salvar_consulta(ip, data):
-    """Salva a consulta no arquivo JSON."""
-
-    if not os.path.exists(CONSULTAS_FILE):
-        with open(CONSULTAS_FILE, "w") as file:
-            json.dump([], file)  # Criar um arquivo JSON vazio caso não exista
-    
+    """Salva a consulta no arquivo JSON e garante que data_hora sempre estará presente."""
     try:
         with open(CONSULTAS_FILE, "r") as file:
             consultas = json.load(file)
-    except (json.JSONDecodeError, FileNotFoundError):
+    except (FileNotFoundError, json.JSONDecodeError):
         consultas = []
 
-    consultas.insert(0, {"ip": ip, "resultado": data, "ultima_consulta": data['data'].get("lastReportedAt", "N/A")})
+    nova_consulta = {
+        "ip": ip,
+        "resultado": data,
+        "data_hora": datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
+    }
+
+    consultas.insert(0, nova_consulta)  # Adiciona a consulta no topo
 
     # Mantém apenas as últimas 10 consultas
     consultas = consultas[:10]
@@ -84,7 +85,7 @@ def home():
         else:
             error = "Domínio inválido ou IP incorreto. Verifique e tente novamente."
 
-    # Carregar histórico de consultas
+    # Correção: Garantir que consultas seja inicializado corretamente
     try:
         with open(CONSULTAS_FILE, "r") as file:
             consultas = json.load(file)
