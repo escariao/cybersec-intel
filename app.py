@@ -9,7 +9,7 @@ app = Flask(__name__)
 # Nome do arquivo JSON onde as consultas serão armazenadas
 CONSULTAS_FILE = "consultas.json"
 
-# ⚠️ Substitua pela sua chave real da AbuseIPDB
+# Substitua pela sua chave real da AbuseIPDB
 ABUSEIPDB_API_KEY = "7652758a92b582f623257d1258cd4512b26ddf7ca4b5d2177bcd9d30578f29fa33fc0737ee25b8a9"
 
 def resolve_domain(domain):
@@ -73,8 +73,13 @@ def home():
     if request.method == "POST":
         user_input = request.form["ip"].strip()
 
-        # Verifica se é um domínio e converte para IP
-        ip = resolve_domain(user_input) if not user_input.replace(".", "").isdigit() else user_input
+        # Verifica se é um domínio e tenta converter para IP
+        if not user_input.replace(".", "").isdigit():
+            ip = resolve_domain(user_input)
+            if not ip:
+                error = "O domínio inserido não pode ser convertido para um IP válido."
+        else:
+            ip = user_input
 
         if ip:
             data = check_ip(ip)
@@ -83,7 +88,7 @@ def home():
             else:
                 salvar_consulta(ip, data)
         else:
-            error = "Domínio inválido ou IP incorreto. Verifique e tente novamente."
+            error = "O IP inserido não é válido. Por favor, insira um IP no formato correto."
 
     # Correção: Garantir que consultas seja inicializado corretamente
     try:
@@ -102,8 +107,12 @@ def api_check_ip(ip):
         return jsonify({"error": "Domínio inválido ou IP incorreto"}), 400
 
     data = check_ip(resolved_ip)
+    if "error" in data:
+        return jsonify(data), 400
+
     salvar_consulta(resolved_ip, data)
     return jsonify(data)
 
 if __name__ == "__main__":
     app.run(debug=True)
+
