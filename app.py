@@ -1,5 +1,6 @@
 import requests
 import socket
+import os
 from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
@@ -90,11 +91,19 @@ def api_check_ip(ip):
     
     return jsonify(check_ip(resolved_ip))
 
+import os
+
 if __name__ == "__main__":
     with app.app_context():
-        try:
-            db.create_all()  # Tenta criar o banco
-            print("Banco de dados criado com sucesso!")
-        except Exception as e:
-            print(f"Erro ao criar banco de dados: {e}")
+        db_file = "consultas.db"
+
+        # Deleta o banco se já existir para garantir uma nova criação
+        if os.path.exists(db_file):
+            os.remove(db_file)
+            print("Banco de dados antigo removido.")
+
+        # Cria o banco de dados do zero
+        db.create_all()
+        print("Novo banco de dados criado com sucesso!")
+
     app.run(debug=True)
