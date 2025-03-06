@@ -1,6 +1,7 @@
 import requests
 import socket
 import json
+import os
 from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
@@ -44,10 +45,15 @@ def check_ip(ip):
 
 def salvar_consulta(ip, data):
     """Salva a consulta no arquivo JSON."""
+
+    if not os.path.exists(CONSULTAS_FILE):
+        with open(CONSULTAS_FILE, "w") as file:
+            json.dump([], file)  # Criar um arquivo JSON vazio caso não exista
+    
     try:
         with open(CONSULTAS_FILE, "r") as file:
             consultas = json.load(file)
-    except (FileNotFoundError, json.JSONDecodeError):
+    except (json.JSONDecodeError, FileNotFoundError):
         consultas = []
 
     consultas.insert(0, {"ip": ip, "resultado": data, "ultima_consulta": data['data'].get("lastReportedAt", "N/A")})
