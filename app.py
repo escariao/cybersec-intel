@@ -92,5 +92,9 @@ def api_check_ip(ip):
 
 if __name__ == "__main__":
     with app.app_context():
-        db.create_all()  # Cria as tabelas no banco de dados
+        try:
+            db.create_all()  # Tenta criar o banco
+            print("Banco de dados criado com sucesso!")
+        except Exception as e:
+            print(f"Erro ao criar banco de dados: {e}")
     app.run(debug=True)
