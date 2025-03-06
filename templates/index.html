@@ -112,7 +112,7 @@
                 {% for consulta in consultas %}
                 <tr>
                     <td>{{ consulta.ip }}</td>
-                    <td>{{ consulta.data_hora.strftime('%d/%m/%Y %H:%M') }}</td>
+                    <td>{{ consulta.data_hora }}</td>
                 </tr>
                 {% endfor %}
             </table>
