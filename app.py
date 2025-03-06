@@ -9,8 +9,8 @@ app = Flask(__name__)
 # Nome do arquivo JSON onde as consultas serão armazenadas
 CONSULTAS_FILE = "consultas.json"
 
-# Substitua pela sua chave real da AbuseIPDB
-ABUSEIPDB_API_KEY = "7652758a92b582f623257d1258cd4512b26ddf7ca4b5d2177bcd9d30578f29fa33fc0737ee25b8a9"
+# ⚠️ Substitua pela sua chave real da AbuseIPDB
+ABUSEIPDB_API_KEY = "SUA_CHAVE_AQUI"
 
 def resolve_domain(domain):
     """Tenta converter um domínio em IP. Retorna None se falhar."""
@@ -77,7 +77,7 @@ def home():
         if not user_input.replace(".", "").isdigit():
             ip = resolve_domain(user_input)
             if not ip:
-                error = "O domínio inserido não pode ser convertido para um IP válido."
+                error = f"O domínio '{user_input}' não pode ser convertido para um IP válido."
         else:
             ip = user_input
 
@@ -115,4 +115,3 @@ def api_check_ip(ip):
 
 if __name__ == "__main__":
     app.run(debug=True)
-
