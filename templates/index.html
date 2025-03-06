@@ -5,102 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CyberSec Intel - Monitoramento de IPs</title>
     
-    <!-- Importando Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Estilos personalizados -->
-    <style>
-        label {
-            color: #ffffff; /* Corrige para branco */
-            font-weight: bold;
-        body {
-            background-color: #121212; /* Fundo escuro */
-            color: #e0e0e0; /* Texto branco */
-            font-family: 'Arial', sans-serif;
-            padding-top: 70px;
-        }
-        .container {
-            max-width: 800px;
-        }
-        .header {
-            text-align: center;
-            padding: 20px 0;
-        }
-        .header h1 {
-            font-size: 28px;
-            font-weight: bold;
-            color: #ffffff;
-        }
-        .card {
-            background: #1e1e1e;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-        }
-        .form-control {
-            background: #2a2a2a;  /* Fundo mais escuro */
-            color: #ffffff; /* Texto branco para melhor visibilidade */
-            border: none;
-        }
-        .form-control::placeholder {
-            color: #b0b0b0; /* Cor mais clara para o placeholder */
-        }
-        .btn-primary {
-            background-color: #ff5733;
-            border: none;
-            font-weight: bold;
-        }
-        .btn-primary:hover {
-            background-color: #e04e2e;
-        }
-        .table {
-            background: #1e1e1e;
-            color: #ffffff;
-        }
-        .alert {
-            border-radius: 5px;
-        }
-        .footer {
-            text-align: center;
-            padding: 15px;
-            margin-top: 20px;
-            color: #a0a0a0;
-            font-size: 14px;
-        }
-    </style>
-
+    <!-- Importar CSS externo -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
-    <!-- Cabeçalho -->
-    <div class="container text-center">
-        <div class="header">
-            <h1>CyberSec Intel - Monitoramento de IPs</h1>
-        </div>
-    </div>
-
-    <!-- Formulário de consulta -->
+    <!-- Container principal -->
     <div class="container">
-        <div class="card shadow mt-4">
-            <form method="POST">
-                <div class="mb-3">
-                    <label for="ip" class="form-label">Digite um IP ou Domínio:</label>
-                    <input type="text" class="form-control" name="ip" placeholder="Exemplo: 8.8.8.8 ou google.com" required>
-                </div>
-                <button type="submit" class="btn btn-primary w-100">Verificar</button>
-            </form>
-        </div>
+        <h1>CyberSec Intel - Monitoramento de IPs</h1>
+
+        <!-- Formulário -->
+        <form method="POST">
+            <label for="ip">Digite um IP ou Domínio:</label>
+            <input type="text" name="ip" placeholder="Exemplo: 8.8.8.8 ou google.com" required>
+            <button type="submit" class="btn">Verificar</button>
+        </form>
 
         <!-- Exibir mensagem de erro -->
         {% if error %}
-        <div class="alert alert-danger mt-3 text-center">{{ error }}</div>
+        <div class="erro">{{ error }}</div>
         {% endif %}
 
         <!-- Exibir resultados da análise -->
         {% if data and not error %}
-        <div class="card shadow mt-4">
-            <h2 class="text-center">Resultados da Análise</h2>
-            <table class="table table-striped">
+        <div class="resultado">
+            <h2>Resultados da Análise</h2>
+            <table>
                 <tr><th>IP</th><td>{{ data['data']['ipAddress'] }}</td></tr>
                 <tr><th>Abuso Reportado</th><td>{{ data['data']['abuseConfidenceScore'] }}%</td></tr>
                 <tr><th>Última Atividade</th><td>{{ data['data']['lastReportedAt'] }}</td></tr>
@@ -110,9 +40,9 @@
 
         <!-- Histórico de consultas -->
         {% if consultas %}
-        <div class="card shadow mt-4">
-            <h2 class="text-center">Histórico de Consultas Recentes</h2>
-            <table class="table table-striped">
+        <div class="historico">
+            <h2>Histórico de Consultas Recentes</h2>
+            <table>
                 <tr>
                     <th>IP/Domínio</th>
                     <th>Data</th>
@@ -133,7 +63,5 @@
         &copy; 2025 CyberSec Intel - Desenvolvido por Andrey Escariao
     </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
