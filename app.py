@@ -6,22 +6,22 @@ from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
 
-# Nome do arquivo JSON onde as consultas serão armazenadas
+# Nome do arquivo JSON para armazenar consultas
 CONSULTAS_FILE = "consultas.json"
 
 # ⚠️ Substitua pela sua chave real da AbuseIPDB
 ABUSEIPDB_API_KEY = "7652758a92b582f623257d1258cd4512b26ddf7ca4b5d2177bcd9d30578f29fa33fc0737ee25b8a9"
 
 def resolve_domain(domain):
-    """Tenta converter um domínio em IP. Retorna uma mensagem clara se falhar."""
+    """Tenta resolver um domínio para IP. Retorna None se falhar."""
     try:
         ip = socket.gethostbyname(domain)
         return ip
     except socket.gaierror:
-        return None  # Agora o erro será tratado no `home()`
+        return None  # Agora o erro será tratado corretamente
 
 def check_ip(ip):
-    """Consulta IPs na AbuseIPDB e trata erros."""
+    """Consulta IPs na AbuseIPDB e trata respostas inesperadas."""
     url = "https://api.abuseipdb.com/api/v2/check"
     headers = {
         "Key": ABUSEIPDB_API_KEY,
@@ -35,17 +35,17 @@ def check_ip(ip):
     try:
         response = requests.get(url, headers=headers, params=params)
         data = response.json()
-        
+
         # Se houver erro na resposta, captura e retorna
         if response.status_code != 200:
-            return {"error": data.get("errors", [{"detail": "Erro desconhecido"}])[0]["detail"]}
-        
+            return {"error": data.get("errors", [{"detail": "Erro desconhecido na API"}])[0]["detail"]}
+
         return data
     except Exception as e:
         return {"error": f"Erro ao consultar AbuseIPDB: {str(e)}"}
 
 def salvar_consulta(ip, data):
-    """Salva a consulta no arquivo JSON e garante que data_hora sempre estará presente."""
+    """Salva a consulta no JSON garantindo que data_hora sempre estará presente."""
     try:
         with open(CONSULTAS_FILE, "r") as file:
             consultas = json.load(file)
@@ -58,10 +58,8 @@ def salvar_consulta(ip, data):
         "data_hora": datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
     }
 
-    consultas.insert(0, nova_consulta)  # Adiciona a consulta no topo
-
-    # Mantém apenas as últimas 10 consultas
-    consultas = consultas[:10]
+    consultas.insert(0, nova_consulta)  # Adiciona no topo da lista
+    consultas = consultas[:10]  # Mantém apenas as últimas 10 consultas
 
     with open(CONSULTAS_FILE, "w") as file:
         json.dump(consultas, file, indent=4)
@@ -74,14 +72,13 @@ def home():
     if request.method == "POST":
         user_input = request.form["ip"].strip()
 
-        # Verifica se é um domínio e tenta converter para IP
+        # Se for um domínio, tenta resolver para IP
         if not user_input.replace(".", "").isdigit():
             ip = resolve_domain(user_input)
             if not ip:
-                error = f"O domínio '{user_input}' não pode ser resolvido para um IP válido. Isso pode indicar que ele não está registrado ou não possui um IP público disponível."
-
+                error = f"Domínio '{user_input}' não pode ser resolvido para um IP válido. Verifique se ele é acessível."
         else:
-            ip = user_input
+            ip = user_input  # Já é um IP, segue adiante
 
         if ip:
             data = check_ip(ip)
@@ -92,7 +89,7 @@ def home():
         else:
             error = "O IP inserido não é válido. Por favor, insira um IP no formato correto."
 
-    # Correção: Garantir que consultas seja inicializado corretamente
+    # Garantir que consultas seja inicializado corretamente
     try:
         with open(CONSULTAS_FILE, "r") as file:
             consultas = json.load(file)
