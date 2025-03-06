@@ -12,7 +12,7 @@
     <style>
         body {
             background-color: #121212; /* Fundo escuro */
-            color: #e0e0e0;
+            color: #e0e0e0; /* Texto branco */
             font-family: 'Arial', sans-serif;
             padding-top: 70px;
         }
@@ -35,13 +35,17 @@
             box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
         }
         .form-control {
-            background: #2a2a2a;
-            color: #ffffff;
+            background: #2a2a2a;  /* Fundo mais escuro */
+            color: #ffffff; /* Texto branco para melhor visibilidade */
             border: none;
+        }
+        .form-control::placeholder {
+            color: #b0b0b0; /* Cor mais clara para o placeholder */
         }
         .btn-primary {
             background-color: #ff5733;
             border: none;
+            font-weight: bold;
         }
         .btn-primary:hover {
             background-color: #e04e2e;
@@ -61,6 +65,7 @@
             font-size: 14px;
         }
     </style>
+
 </head>
 <body>
 
