@@ -1,23 +1,12 @@
 import requests
 import socket
-import os
+import json
 from flask import Flask, render_template, request, jsonify
-from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
 
 app = Flask(__name__)
 
-# Configuração do banco de dados SQLite
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///consultas.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
-
-# Modelo para armazenar consultas
-class Consulta(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    ip = db.Column(db.String(100), nullable=False)
-    resultado = db.Column(db.Text, nullable=False)
-    data_hora = db.Column(db.DateTime, default=datetime.utcnow)
+# Nome do arquivo JSON onde as consultas serão armazenadas
+CONSULTAS_FILE = "consultas.json"
 
 # ⚠️ Substitua pela sua chave real da AbuseIPDB
 ABUSEIPDB_API_KEY = "7652758a92b582f623257d1258cd4512b26ddf7ca4b5d2177bcd9d30578f29fa33fc0737ee25b8a9"
@@ -53,6 +42,22 @@ def check_ip(ip):
     except Exception as e:
         return {"error": f"Erro ao consultar AbuseIPDB: {str(e)}"}
 
+def salvar_consulta(ip, data):
+    """Salva a consulta no arquivo JSON."""
+    try:
+        with open(CONSULTAS_FILE, "r") as file:
+            consultas = json.load(file)
+    except (FileNotFoundError, json.JSONDecodeError):
+        consultas = []
+
+    consultas.insert(0, {"ip": ip, "resultado": data, "ultima_consulta": data['data'].get("lastReportedAt", "N/A")})
+
+    # Mantém apenas as últimas 10 consultas
+    consultas = consultas[:10]
+
+    with open(CONSULTAS_FILE, "w") as file:
+        json.dump(consultas, file, indent=4)
+
 @app.route("/", methods=["GET", "POST"])
 def home():
     data = None
@@ -63,47 +68,35 @@ def home():
 
         # Verifica se é um domínio e converte para IP
         ip = resolve_domain(user_input) if not user_input.replace(".", "").isdigit() else user_input
-        
+
         if ip:
             data = check_ip(ip)
             if "error" in data:
                 error = data["error"]
             else:
-                # Armazena a consulta no banco de dados
-                resultado = str(data)
-                nova_consulta = Consulta(ip=ip, resultado=resultado)
-                db.session.add(nova_consulta)
-                db.session.commit()
+                salvar_consulta(ip, data)
         else:
             error = "Domínio inválido ou IP incorreto. Verifique e tente novamente."
 
-    # Recupera as últimas 10 consultas
-    consultas = Consulta.query.order_by(Consulta.data_hora.desc()).limit(10).all()
-    
+    # Carregar histórico de consultas
+    try:
+        with open(CONSULTAS_FILE, "r") as file:
+            consultas = json.load(file)
+    except (FileNotFoundError, json.JSONDecodeError):
+        consultas = []
+
     return render_template("index.html", data=data, error=error, consultas=consultas)
 
 @app.route("/api/check_ip/<ip>")
 def api_check_ip(ip):
     resolved_ip = resolve_domain(ip) if not ip.replace(".", "").isdigit() else ip
-    
+
     if not resolved_ip:
         return jsonify({"error": "Domínio inválido ou IP incorreto"}), 400
-    
-    return jsonify(check_ip(resolved_ip))
 
-import os
+    data = check_ip(resolved_ip)
+    salvar_consulta(resolved_ip, data)
+    return jsonify(data)
 
 if __name__ == "__main__":
-    with app.app_context():
-        db_file = "consultas.db"
-
-        # Deleta o banco se já existir para garantir uma nova criação
-        if os.path.exists(db_file):
-            os.remove(db_file)
-            print("Banco de dados antigo removido.")
-
-        # Cria o banco de dados do zero
-        db.create_all()
-        print("Novo banco de dados criado com sucesso!")
-
     app.run(debug=True)
