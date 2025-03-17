@@ -45,7 +45,7 @@ Acesse **http://localhost:5000/** no navegador para utilizar a interface.
 
 ## 🌍 **Versão Online**
 A plataforma pode ser acessada sem instalação:
-[🔗 CyberSec Intel Online](https://cybersec-intel.onrender.com/)
+🔗 [CyberSec Intel Online](https://cybersec-intel.onrender.com/)
 
 ---
 Desenvolvido por **Andrey M. E.** 🛡️
