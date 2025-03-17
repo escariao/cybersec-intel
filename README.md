@@ -8,11 +8,11 @@
 **CyberSec Intel** é uma plataforma voltada para **inteligência de ameaças cibernéticas**, aplicação web desenvolvida em Python com o framework Flask, que permite a verificação de IPs ou domínios contra o histórico de abusos reportado na AbuseIPDB. A aplicação também mantém um histórico local das últimas 10 consultas realizadas.
 
 ## 🚀 **Principais Funcionalidades**
-✔️ **Verificação de IPs/Domínios:** Insira um IP ou domínio para análise.
-✔️ **Resolução de Domínios:** Converte domínios em IPs válidos.
-✔️ **Consulta à AbuseIPDB:** Realiza chamadas à API para verificar o histórico de abuso.
-✔️ **Histórico de Consultas:** Armazena as últimas 10 consultas em um arquivo JSON.
-✔️ **API RESTful:** Endpoint `/api/check_ip/<ip>` para consultas programáticas.
+✔️ **Verificação de IPs/Domínios:** Insira um IP ou domínio para análise.  
+✔️ **Resolução de Domínios:** Converte domínios em IPs válidos.  
+✔️ **Consulta à AbuseIPDB:** Realiza chamadas à API para verificar o histórico de abuso.  
+✔️ **Histórico de Consultas:** Armazena as últimas 10 consultas em um arquivo JSON.  
+✔️ **API RESTful:** Endpoint `/api/check_ip/<ip>` para consultas programáticas.  
 
 
 ## 🛠 **Tecnologias Utilizadas**
