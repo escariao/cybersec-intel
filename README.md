@@ -5,14 +5,15 @@
 ![GitHub license](https://img.shields.io/github/license/escariao/cybersec-intel)
 ![GitHub last commit](https://img.shields.io/github/last-commit/escariao/cybersec-intel)
 
-O **CyberSec Intel** é uma plataforma voltada para **inteligência de ameaças cibernéticas**, permitindo coleta, análise e visualização de dados sobre incidentes de segurança, vazamentos de dados, ataques e tendências de cibersegurança.
+**CyberSec Intel** é uma plataforma voltada para **inteligência de ameaças cibernéticas**, aplicação web desenvolvida em Python com o framework Flask, que permite a verificação de IPs ou domínios contra o histórico de abusos reportado na AbuseIPDB. A aplicação também mantém um histórico local das últimas 10 consultas realizadas.
 
 ## 🚀 **Principais Funcionalidades**
-✔️ **Monitoramento de ameaças** – Coleta dados de fontes abertas sobre ameaças ativas.  
-✔️ **Análise de vulnerabilidades** – Consulta CVEs e explorações conhecidas.  
-✔️ **Rastreamento de vazamentos** – Verifica exposições de dados e credenciais comprometidas.  
-✔️ **Identificação de IOCs** – Detecta IPs, domínios e hashes suspeitos.  
-✔️ **Dashboards interativos** – Interface gráfica para visualização de dados críticos.  
+✔️ **Verificação de IPs/Domínios:** Insira um IP ou domínio para análise.
+✔️ **Resolução de Domínios:** Converte domínios em IPs válidos.
+✔️ **Consulta à AbuseIPDB:** Realiza chamadas à API para verificar o histórico de abuso.
+✔️ **Histórico de Consultas:** Armazena as últimas 10 consultas em um arquivo JSON.
+✔️ **API RESTful:** Endpoint `/api/check_ip/<ip>` para consultas programáticas.
+
 
 ## 🛠 **Tecnologias Utilizadas**
 | Tecnologia | Descrição |
@@ -20,10 +21,6 @@ O **CyberSec Intel** é uma plataforma voltada para **inteligência de ameaças 
 | **🐍 Python** | Linguagem principal do projeto |
 | **Flask** | Framework web para interface |
 | **Requests** | Captura de informações de APIs |
-| **BeautifulSoup** | Extração de dados web |
-| **Shodan API** | Consulta de dispositivos expostos |
-| **CVE API** | Coleta de vulnerabilidades conhecidas |
-| **Have I Been Pwned API** | Verificação de vazamentos de credenciais |
 | **Render** | Hospedagem do serviço |
 
 ## 📌 **Como Usar**
